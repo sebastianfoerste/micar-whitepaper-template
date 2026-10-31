@@ -1,35 +1,26 @@
 # micar-whitepaper-template
 
-A starter repository for drafting a MiCAR crypto-asset white paper with continuous linting. Click **Use this template**, fill in `whitepaper.json` section by section, and let CI tell you which mandatory disclosures are still open.
+A MiCAR crypto-asset white paper template with continuous linting. Fill in `whitepaper.json`; each push to `main` and each pull request runs [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter), which lists each open finding with its citation under **Actions**. In report mode (`strict: 'false'`) open findings do not fail the check; a file the linter cannot load (invalid JSON, unknown `"type"`) does. Set `strict: 'true'` in the workflow to fail on any open (Review or Missing) BLOCKER.
 
-Every push to `main` and every pull request runs [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter) and reports each open finding with its citation in the **Actions** tab. The default workflow runs in report mode (`strict: 'false'`), so open findings do not fail the check while you draft (a `whitepaper.json` the linter cannot load, such as invalid JSON or an unknown `"type"`, still does). Flip `strict` to `'true'` in `.github/workflows/micar-lint.yml` when you want the build to **fail on any open BLOCKER** before you notify the white paper or submit it for approval. The build then always fails: the iXBRL format BLOCKER can never pass for `whitepaper.json`, and for an asset-referenced token (the default `"type": "art"`) neither can the deposit-floor BLOCKER (see below). Read the log for the others.
-
-Two BLOCKER checks never pass for this draft, by design. The iXBRL format check cannot be met by a JSON draft, because the notification format is XHTML with Inline XBRL tagging. For an asset-referenced token, the deposit floor of the reserve of assets (Art. 35(4), 36(4)(d), 45(3) and 45(7)(b) MiCAR) always stays open for a lawyer. A green pipeline never means the white paper is lawful, complete, or ready to notify or submit for approval. That judgment stays with your lawyer.
-
-You can also lint drafts [live in the browser](https://sebastianfoerste.github.io/micar-whitepaper-linter/playground/). Nothing you paste leaves the page.
+Or lint [in the browser](https://sebastianfoerste.github.io/micar-whitepaper-linter/playground/); nothing you paste leaves the page.
 
 ## How to use it
 
-1. **Use this template** → create your repository (private is fine).
-2. Edit `whitepaper.json`. Replace every `REPLACE:` placeholder; each section's placeholder states the disclosure the section must carry, and some cite a MiCAR provision (check each citation against your token type). The linter does not treat `REPLACE:` text as a placeholder. It reads an untouched section as written text, so most checks report Review on it, not Missing, and in some releases a few even pass (in 1.2.1 the notification-date and language checks do). In 1.2.1 the two LEI checks still report the `issuer` section Missing, because it gives no LEI. Search for any `REPLACE:` left over yourself.
-3. Set `"type"` to `art`, `emt`, or `other` depending on your token. Section requirements follow the type (Anhang I-III MiCAR), but `whitepaper.json` holds the sections of an asset-referenced token (`art`), and its placeholders describe the requirements for that type (Art. 19 and Anhang II MiCAR). For `emt` or `other`, the linter warns about the keys that type does not read (`art`, `reserve_of_assets`, `redemption`). It reports as Missing each section that type's rules read and the template lacks: `emt` and `safeguarding` for `emt`; `offeror`, `trading_platform_operator`, `project` and `crypto_asset` for `other`; and, for both, `not_approved_statement` once a linter release includes the first-page statement check. Add those sections and rewrite the placeholders for your type.
-4. Push to `main` or open a pull request. Open the **Actions** tab: the `micar-lint` run lists every open finding with its citation (article and paragraph, or annex part).
-5. Work the findings down, then hand the draft to counsel. The linter checks structure and required disclosure elements, not legal sufficiency.
+1. **Use this template** (private is fine).
+2. Replace every `REPLACE:` placeholder; each names the disclosure its section must carry. The linter reads an untouched placeholder as text, not as a gap, so search for leftovers yourself.
+3. Set `"type"` to `art`, `emt` or `other`. The placeholders describe an asset-referenced token (Art. 19 and Annex II MiCAR); for `emt` or `other`, the linter warns about keys it does not read and names the sections it lacks. Add those and rewrite the existing placeholders for your type.
+4. Push, work the findings down, then hand the draft to counsel.
 
 ## What the linter checks
 
-Deterministic rules (no LLM, same input, same findings). For each mandatory section (summary, risk warning, management-body statement, redemption, reserve of assets, …) and each annex-specific item for the token type, the linter checks that the section exists, meets a minimum length and contains the expected keywords. Once a linter release includes them (see below), the notification-date and language checks look for a calendar date and an official EU language instead. It does not compare your text with the wording MiCAR prescribes (the one exception, once a linter release includes it, is the English first-page statement for Title II and e-money token white papers under Art. 6 Abs. 3 and Art. 51 Abs. 3 MiCAR), and it does not judge whether a disclosure is accurate or adequate. Findings are staged pass / review / missing.
-
-The rules, their citations and their tests live in [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter), which is the source of truth; this README only summarises them.
-
-The workflow pins the linter's `@v1` tag, which moves to each linter release. `@v1` runs v1.2.1, which does not yet run the corrected asset-referenced token redemption and reserve checks (Art. 39 MiCAR, Anhang II Teil D und G MiCAR), check the first-page statement, or look for a date and a language in the notification-date and language sections; they reach `@v1` with the release that includes them.
+Deterministic checks: keywords, minimum length and structure per required section and annex item, LEI check digits, file format; the linter does not judge whether a disclosure is accurate or adequate. Two BLOCKERs never pass for this draft: the iXBRL format check (the notification format is XHTML with Inline XBRL, not JSON) and, for an asset-referenced token, the deposit floor of the reserve of assets (Art. 35(4), 36(4)(d), 45(3) and 45(7)(b) MiCAR), left to a lawyer; a strict build therefore always fails. The workflow follows the linter's `@v1` tag, which moves with each v1 release; see its changelog for changes.
 
 ## Scope and honesty
 
-- Not legal advice. A draft can pass every check that can pass and still be misleading.
-- The template covers the white paper content requirements, not the authorization or notification procedure itself.
-- Template text is synthetic guidance; nothing in it describes a real issuer or token.
+- Not legal advice. A green check never means the white paper is lawful, complete or ready to notify or submit for approval. That judgment stays with your lawyer.
+- Content requirements only, not the authorisation or notification procedure.
+- Synthetic guidance; nothing describes a real issuer or token.
 
 ## License
 
-MIT. The linter behind the CI check is separately MIT-licensed at [sebastianfoerste/micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter).
+MIT, like the [linter](https://github.com/sebastianfoerste/micar-whitepaper-linter).
